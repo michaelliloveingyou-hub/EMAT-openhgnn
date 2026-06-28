@@ -1,0 +1,16 @@
+# simplehgn_ohgbn_acm_ashinC.yaml
+#
+# 功能简介：
+# SimpleHGN 在 ohgbn-acm 数据集上启用 ASHIN-C 的实验配置摘要。
+#
+# 说明：
+# ASHIN-C 是 ASHIN-B 的无监督压缩版本，默认输出 128 维结构特征。
+#
+model: SimpleHGN
+dataset: ohgbn-acm
+task: node_classification
+use_ashin: true
+ashin_version: C
+ashin_dim: 128
+ashin_norm: log1p_zscore
+seed: 0

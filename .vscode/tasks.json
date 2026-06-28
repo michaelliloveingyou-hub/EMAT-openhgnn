@@ -1,0 +1,55 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Lisan RGCN A-E feature sweep",
+      "type": "shell",
+      "command": "E:\\Anaconda3\\envs\\lisan-openhgnn\\python.exe",
+      "args": [
+        "${workspaceFolder}\\scripts\\run_lisan_rgcn_feature_sweep.py",
+        "--feature_modes",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "--datasets",
+        "lisan-acm",
+        "lisan-dblp",
+        "--tasks",
+        "node_classification",
+        "link_prediction",
+        "--n_trials",
+        "1",
+        "--seeds",
+        "0",
+        "--max_epoch",
+        "50",
+        "--patience",
+        "10",
+        "--gpu",
+        "-1",
+        "--resume"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Lisan RGCN A-E feature sweep dry-run",
+      "type": "shell",
+      "command": "E:\\Anaconda3\\envs\\lisan-openhgnn\\python.exe",
+      "args": [
+        "${workspaceFolder}\\scripts\\run_lisan_rgcn_feature_sweep.py",
+        "--dry_run"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}

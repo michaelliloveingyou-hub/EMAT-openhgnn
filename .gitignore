@@ -1,0 +1,59 @@
+# Python cache and local environments
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.env
+.venv/
+venv/
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+
+# Build/install artifacts
+*.egg-info/
+OpenHGNN/openhgnn.egg-info/
+build/
+dist/
+
+# Large source datasets and generated feature artifacts
+Datasets/
+Dataset_Emat/
+data/archives/
+data/lisan_processed_features/
+OpenHGNN/openhgnn/dataset/lisan_hgb/*.bin
+OpenHGNN/openhgnn/dataset/lisan_hgb/*.manifest.json
+OpenHGNN/openhgnn/dataset/**/graph.bin
+OpenHGNN/openhgnn/dataset/*.zip
+
+# Experiment outputs, logs, model weights, and TensorBoard files
+experiments/
+outputs/
+runs/
+logs/
+OpenHGNN/output/
+OpenHGNN/openhgnn/output/
+*.log
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.dgl
+*.pkl
+*.pickle
+*.npy
+*.npz
+events.out.tfevents.*
+
+# Archives should stay outside Git; use AutoDL data storage or external artifact storage.
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar

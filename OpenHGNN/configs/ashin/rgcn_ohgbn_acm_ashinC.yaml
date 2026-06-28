@@ -1,0 +1,16 @@
+# rgcn_ohgbn_acm_ashinC.yaml
+#
+# 功能简介：
+# RGCN 在 ohgbn-acm 数据集上启用 ASHIN-C 的实验配置摘要。
+#
+# 说明：
+# ASHIN-C 会先构造 ASHIN-B incidence，再压缩到 ashin_dim 指定的低维 dense 特征。
+#
+model: RGCN
+dataset: ohgbn-acm
+task: node_classification
+use_ashin: true
+ashin_version: C
+ashin_dim: 128
+ashin_norm: log1p_zscore
+seed: 0

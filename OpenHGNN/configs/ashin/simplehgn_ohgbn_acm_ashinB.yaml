@@ -1,0 +1,15 @@
+# simplehgn_ohgbn_acm_ashinB.yaml
+#
+# 功能简介：
+# SimpleHGN 在 ohgbn-acm 数据集上启用 ASHIN-B 的实验配置摘要。
+#
+# 说明：
+# ASHIN-B 保留完整 signature vocabulary，对目标节点类型追加 0/1 incidence 特征。
+#
+model: SimpleHGN
+dataset: ohgbn-acm
+task: node_classification
+use_ashin: true
+ashin_version: B
+ashin_norm: none
+seed: 0

@@ -57,10 +57,35 @@ def build_search_space(model: str, task: str, max_epoch: int, patience: int):
                     "feats_drop_rate": dropout,
                 }
             )
+        elif model == "GCN":
+            params.update(
+                {
+                    "gnn_type": "gcnconv",
+                    "layers_gnn": trial.suggest_int("layers_gnn", 2, 4),
+                    "layers_pre_mp": 1,
+                    "layers_post_mp": 1,
+                    "stage_type": "stack",
+                    "num_heads": 1,
+                    "has_bn": trial.suggest_categorical("has_bn", [True, False]),
+                    "has_l2norm": trial.suggest_categorical("has_l2norm", [True, False]),
+                }
+            )
+        elif model == "GAT":
+            params.update(
+                {
+                    "gnn_type": "gatconv",
+                    "layers_gnn": trial.suggest_int("layers_gnn", 2, 4),
+                    "layers_pre_mp": 1,
+                    "layers_post_mp": 1,
+                    "stage_type": "stack",
+                    "num_heads": trial.suggest_categorical("num_heads", [2, 4, 8]),
+                    "has_bn": trial.suggest_categorical("has_bn", [True, False]),
+                    "has_l2norm": trial.suggest_categorical("has_l2norm", [True, False]),
+                }
+            )
 
         if task == "link_prediction":
             params["score_fn"] = "distmult"
         return params
 
     return suggest
-

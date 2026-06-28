@@ -12,7 +12,7 @@ from typing import Any
 
 import torch
 
-from .config import OPENHGNN_ROOT, ExperimentSpec, is_supported, normalize_feature_mode
+from .config import OPENHGNN_ROOT, ExperimentSpec, is_supported, normalize_feature_mode, openhgnn_model_name
 from .io_utils import append_log, ensure_dir, read_csv_rows, read_json, write_csv_rows, write_exception, write_json
 from .metrics import flatten_result_metrics, objective_from_result
 from .search_spaces import build_search_space
@@ -144,7 +144,8 @@ def run_openhgnn_once(
     from openhgnn import Experiment
 
     ensure_dir(output_dir)
-    ensure_dir(output_dir / spec.model)
+    runtime_model = openhgnn_model_name(spec.model)
+    ensure_dir(output_dir / runtime_model)
     set_deterministic_seed(seed)
     kwargs = dict(COMMON_RUNTIME_DEFAULTS)
     kwargs.update(params)
@@ -156,7 +157,7 @@ def run_openhgnn_once(
         with contextlib.redirect_stdout(log_file), contextlib.redirect_stderr(log_file):
             with working_directory(OPENHGNN_ROOT):
                 experiment = Experiment(
-                    model=spec.model,
+                    model=runtime_model,
                     dataset=spec.dataset,
                     task=spec.task,
                     gpu=gpu,

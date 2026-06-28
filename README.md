@@ -12,6 +12,7 @@
   - `audit_lisan_datasets.py`: 只读扫描数据集并生成 Markdown 审计报告。
   - `convert_lisan_to_openhgnn.py`: 将 `Datasets/ACM`、`Datasets/DBLP` 转换为 OpenHGNN 可读取的 DGL 图文件。
   - `run_lisan_raw_experiments.py`: 一键运行 `lisan-acm`、`lisan-dblp` 的 raw 特征 baseline 实验。
+  - `run_lisan_model_feature_sweep.py`: 一键运行 HGT、SimpleHGN、GCN、GAT 的 A-E 特征 sweep。
 - `docs/`: 项目文档。
   - `openhgnn_lisan_usage.md`: Lisan 数据集接入 OpenHGNN 的运行说明。
   - `work_targets/lisan_raw_experiments_goal.md`: raw baseline 自动化实验目标文件。
@@ -164,6 +165,20 @@ python .\scripts\run_lisan_rgcn_feature_sweep.py --resume
 
 VSCode 中也可以直接运行任务 `Lisan RGCN A-E feature sweep`。该任务默认使用轻量配置 `--n_trials 1 --seeds 0 --max_epoch 50 --patience 10 --gpu -1`；正式长实验可在命令行改为 `--n_trials 50 --seeds 0 1 2 3 4 --gpu 0`。
 
+运行 HGT、SimpleHGN、GCN、GAT 的 A-E 特征 sweep。该脚本默认遍历 `HGT/SimpleHGN/GCN/GAT × A/B/C/D/E × lisan-acm/lisan-dblp × node_classification/link_prediction`，每个组合先做 HPO，再用 5 个 seed 复训并汇总均值和样本标准差。GCN/GAT 使用 OpenHGNN 的 `homo_GNN` 后端，分别设置 `gnn_type=gcnconv/gatconv`；`E/raw_emat_sparse_encoder` 当前会被记录为 skipped：
+
+```powershell
+python .\scripts\run_lisan_model_feature_sweep.py `
+  --n_trials 50 `
+  --seeds 0 1 2 3 4 `
+  --max_epoch 200 `
+  --patience 20 `
+  --gpu 0 `
+  --resume
+```
+
+AutoDL 上同样先 `conda activate lisan-openhgnn`，再运行上面的命令；数据目录和预处理图文件需要在 AutoDL 数据盘中提前准备或重新生成，GitHub 只同步代码和文档。
+
 快速预览将要运行的组合：
 
 ```powershell
@@ -293,5 +308,9 @@ python scripts\run_lisan_raw_experiments.py --datasets lisan-acm lisan-dblp --ta
 修正 EMat 后三种特征构建方式：新增 `scripts/diagnose_emat_features.py`、`scripts/preprocess_emat_svd.py`、`scripts/preprocess_emat_tfidf.py`、`scripts/preprocess_emat_tfidf_svd.py`、`scripts/preprocess_emat_sparse_inputs.py` 和 `experiments_lisan/models/emat_sparse_encoder.py`。SVD、TF-IDF、TF-IDF+SVD 现在先保存到 `data/lisan_processed_features/<dataset>/`，再由转换器读取产物生成静态图；`E/raw_emat_sparse_encoder` 不再使用错误的固定随机投影，当前只保存 CSR 输入和可学习 encoder 模块，通用 RGCN sweep 会跳过并记录原因。已重新生成并验证 `emat_svd_128`、`emat_tfidf_3025`、`emat_tfidf_svd_128`、`raw_emat_3025`、`raw_emat_svd_128`、`raw_emat_tfidf_3025`、`raw_emat_tfidf_svd_128` 的 ACM/DBLP 图文件。
 
 ### 改动 24
+
+新增 `scripts/run_lisan_model_feature_sweep.py`，用于批量运行 HGT、SimpleHGN、GCN、GAT 在 A-E 特征、两个数据集、两个任务上的 HPO + 5 seed 评估。扩展 `experiments_lisan/search_spaces.py` 和 `experiments_lisan/runner.py`：GCN/GAT 通过 OpenHGNN `homo_GNN` 后端运行，分别映射为 `gcnconv` 和 `gatconv`，结果目录仍按 `GCN`、`GAT` 保存。`.vscode/tasks.json` 改用跨机器的 `python` 命令，并新增该 sweep 的 dry-run 和正式任务，便于 GitHub 同步到 AutoDL 后使用。
+
+### 改动 25
 
 整理 GitHub + AutoDL 同步边界：扩展 `.gitignore`，默认排除 `Datasets/`、`Dataset_Emat/`、`data/archives/`、`data/lisan_processed_features/`、`experiments/`、`outputs/`、OpenHGNN 生成的数据图文件、模型权重、日志、TensorBoard 文件和压缩包；新增 `.gitattributes` 统一 Windows/AutoDL Linux 之间的文本换行；更新 README 的项目简介、目录说明、GitHub/AutoDL 同步流程、数据外置说明和提交前验证命令。本次未删除、移动或压缩任何已有数据与训练结果。

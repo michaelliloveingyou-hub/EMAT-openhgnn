@@ -8,8 +8,8 @@ Run reproducible baseline experiments for:
 
 - datasets: `lisan-acm`, `lisan-dblp`
 - tasks: `node_classification`, `link_prediction`
-- node-classification models: `RGCN`, `HAN`, `HGT`, `SimpleHGN`
-- link-prediction models: `RGCN`, `HGT`, `SimpleHGN`
+- node-classification models: `RGCN`, `HAN`, `HGT`, `SimpleHGN`, `GCN`, `GAT`
+- link-prediction models: `RGCN`, `HGT`, `SimpleHGN`, `GCN`, `GAT`
 
 Use `--feature_mode` to run the same workflow on the selected static feature graph. The HPO search space, seeds, tasks, models, and split logic are intentionally shared across feature modes.
 
@@ -65,6 +65,8 @@ Final tables:
 
 The current OpenHGNN link-prediction path reports `roc_auc` and `loss`; AP, MRR, and Hits@10 summary columns are kept blank.
 
+`GCN` and `GAT` are implemented through OpenHGNN's `homo_GNN` backend. The experiment output directories and summaries still use the user-facing names `GCN` and `GAT`; internally the runner sets `gnn_type=gcnconv` or `gnn_type=gatconv`.
+
 ## PowerShell
 
 ```powershell
@@ -98,6 +100,20 @@ python .\scripts\run_lisan_raw_experiments.py `
   --gpu 0 `
   --resume
 ```
+
+HGT, SimpleHGN, GCN, and GAT feature sweep:
+
+```powershell
+python .\scripts\run_lisan_model_feature_sweep.py `
+  --n_trials 50 `
+  --seeds 0 1 2 3 4 `
+  --max_epoch 200 `
+  --patience 20 `
+  --gpu 0 `
+  --resume
+```
+
+The default sweep covers `HGT SimpleHGN GCN GAT x A B C D E x lisan-acm lisan-dblp x node_classification link_prediction`. Feature mode `E` is recorded as skipped until the runtime `EMatSparseEncoder` wrapper is implemented.
 
 ## CMD
 

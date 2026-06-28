@@ -44,12 +44,21 @@ def normalize_feature_mode(feature_mode: str) -> str:
 
 DATASETS = ("lisan-acm", "lisan-dblp")
 TASKS = ("node_classification", "link_prediction")
-MODELS = ("RGCN", "HAN", "HGT", "SimpleHGN")
+MODELS = ("RGCN", "HAN", "HGT", "SimpleHGN", "GCN", "GAT")
 
 SUPPORTED_MODELS_BY_TASK = {
-    "node_classification": {"RGCN", "HAN", "HGT", "SimpleHGN"},
-    "link_prediction": {"RGCN", "HGT", "SimpleHGN"},
+    "node_classification": {"RGCN", "HAN", "HGT", "SimpleHGN", "GCN", "GAT"},
+    "link_prediction": {"RGCN", "HGT", "SimpleHGN", "GCN", "GAT"},
 }
+
+OPENHGNN_MODEL_ALIASES = {
+    "GCN": "homo_GNN",
+    "GAT": "homo_GNN",
+}
+
+
+def openhgnn_model_name(model: str) -> str:
+    return OPENHGNN_MODEL_ALIASES.get(model, model)
 
 NODE_SUMMARY_COLUMNS = [
     "task",

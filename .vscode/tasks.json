@@ -4,9 +4,9 @@
     {
       "label": "Lisan RGCN A-E feature sweep",
       "type": "shell",
-      "command": "E:\\Anaconda3\\envs\\lisan-openhgnn\\python.exe",
+      "command": "python",
       "args": [
-        "${workspaceFolder}\\scripts\\run_lisan_rgcn_feature_sweep.py",
+        "${workspaceFolder}/scripts/run_lisan_rgcn_feature_sweep.py",
         "--feature_modes",
         "A",
         "B",
@@ -40,15 +40,57 @@
     {
       "label": "Lisan RGCN A-E feature sweep dry-run",
       "type": "shell",
-      "command": "E:\\Anaconda3\\envs\\lisan-openhgnn\\python.exe",
+      "command": "python",
       "args": [
-        "${workspaceFolder}\\scripts\\run_lisan_rgcn_feature_sweep.py",
+        "${workspaceFolder}/scripts/run_lisan_rgcn_feature_sweep.py",
         "--dry_run"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
       "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Lisan HGT SimpleHGN GCN GAT feature sweep dry-run",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "${workspaceFolder}/scripts/run_lisan_model_feature_sweep.py",
+        "--dry_run"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Lisan HGT SimpleHGN GCN GAT feature sweep",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "${workspaceFolder}/scripts/run_lisan_model_feature_sweep.py",
+        "--n_trials",
+        "50",
+        "--seeds",
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "--max_epoch",
+        "200",
+        "--patience",
+        "20",
+        "--gpu",
+        "0",
+        "--resume"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
       "problemMatcher": []
     }
   ]

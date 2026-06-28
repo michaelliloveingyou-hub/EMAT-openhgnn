@@ -13,6 +13,7 @@
   - `convert_lisan_to_openhgnn.py`: 将 `Datasets/ACM`、`Datasets/DBLP` 转换为 OpenHGNN 可读取的 DGL 图文件。
   - `run_lisan_raw_experiments.py`: 一键运行 `lisan-acm`、`lisan-dblp` 的 raw 特征 baseline 实验。
   - `run_lisan_model_feature_sweep.py`: 一键运行 HGT、SimpleHGN、GCN、GAT 的 A-E 特征 sweep。
+  - `autodl_run_model_feature_parallel.sh`: AutoDL 上两模型并行运行 HGT、SimpleHGN、GCN、GAT sweep 的启动脚本，预检通过后分两批训练，全部结束后关机。
 - `docs/`: 项目文档。
   - `openhgnn_lisan_usage.md`: Lisan 数据集接入 OpenHGNN 的运行说明。
   - `work_targets/lisan_raw_experiments_goal.md`: raw baseline 自动化实验目标文件。
@@ -179,6 +180,28 @@ python .\scripts\run_lisan_model_feature_sweep.py `
 
 AutoDL 上同样先 `conda activate lisan-openhgnn`，再运行上面的命令；数据目录和预处理图文件需要在 AutoDL 数据盘中提前准备或重新生成，GitHub 只同步代码和文档。
 
+AutoDL 上需要长时间运行并避免手动复制长命令时，可使用两模型并行启动脚本。该脚本默认先跑 `HGT + SimpleHGN`，再跑 `GCN + GAT`，每个模型写入独立日志，使用 `--resume` 续跑，预检失败时不会关机；预检通过并完成两批训练后会执行 `/usr/bin/shutdown`：
+
+```bash
+cd /root/autodl-tmp/EMAT-openhgnn
+mkdir -p outputs/logs
+nohup bash scripts/autodl_run_model_feature_parallel.sh > outputs/logs/autodl_model_parallel_stdout.log 2>&1 &
+```
+
+查看运行状态和日志：
+
+```bash
+ps -ef | grep run_lisan_model_feature_sweep | grep -v grep
+tail -f outputs/logs/model_sweep_HGT.log
+tail -f outputs/logs/model_feature_parallel_launcher_*.log
+```
+
+如需调试时不关机，可临时设置：
+
+```bash
+SHUTDOWN_AFTER=0 bash scripts/autodl_run_model_feature_parallel.sh
+```
+
 快速预览将要运行的组合：
 
 ```powershell
@@ -314,3 +337,7 @@ python scripts\run_lisan_raw_experiments.py --datasets lisan-acm lisan-dblp --ta
 ### 改动 25
 
 整理 GitHub + AutoDL 同步边界：扩展 `.gitignore`，默认排除 `Datasets/`、`Dataset_Emat/`、`data/archives/`、`data/lisan_processed_features/`、`experiments/`、`outputs/`、OpenHGNN 生成的数据图文件、模型权重、日志、TensorBoard 文件和压缩包；新增 `.gitattributes` 统一 Windows/AutoDL Linux 之间的文本换行；更新 README 的项目简介、目录说明、GitHub/AutoDL 同步流程、数据外置说明和提交前验证命令。本次未删除、移动或压缩任何已有数据与训练结果。
+
+### 改动 26
+
+新增 `scripts/autodl_run_model_feature_parallel.sh`，用于 AutoDL 上启动 HGT、SimpleHGN、GCN、GAT 的模型-特征 sweep。脚本会激活 `lisan-openhgnn` 环境，设置 DGL/PyTorch/NVRTC 相关环境变量，先做 OpenHGNN/DGL/GPU 预检；预检失败时不启动训练也不关机。预检通过后按 `HGT + SimpleHGN`、`GCN + GAT` 两批并行运行，每个模型写入 `outputs/logs/model_sweep_<model>.log`，结果分别保存到 `experiments/lisan_model_feature_sweep_parallel/<model>/`，全部完成后执行 `/usr/bin/shutdown`。
